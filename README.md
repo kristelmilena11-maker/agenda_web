@@ -1,19 +1,25 @@
-# Aplicación Web - Agenda Personal de Contactos
+# Agenda Web (PHP y MySQL)
 
-## Descripción del Proyecto
-Sistema web desarrollado en PHP y MySQL que permite a los usuarios registrarse, iniciar sesión de forma segura y gestionar una agenda personal de contactos de manera totalmente privada e individual.
+## 1. URL pública
+http://agenda-kristel.byethost3.com
 
-## Tecnologías Utilizadas
-- **PHP** (Lógica de servidor y PDO para conexión a base de datos).
-- **MySQL / MariaDB** (Almacenamiento de datos mediante XAMPP).
-- **HTML5 y CSS3** (Diseño de interfaces de usuario).
+## 2. Capturas de pantalla
+Pendiente agregar capturas de pantalla de la aplicación y el despliegue.
 
-## Requisitos para su ejecución
-- Tener instalado **XAMPP** (o un entorno local con PHP y Apache).
-- Navegador web moderno (Chrome, Edge, Firefox).
+## 3. Tecnologías utilizadas
+- PHP (PDO)
+- MySQL / MariaDB
+- HTML y CSS
+- XAMPP y ByetHost (VistaPanel)
 
-## Pasos para instalar y ejecutar la aplicación
-1. Coloca la carpeta completa del proyecto en el directorio raíz de tu servidor local (`C:\xampp\htdocs\agenda_web\`).
-2. Enciende los servicios de **Apache** y **MySQL** desde el panel de control de XAMPP.
-3. Abre phpMyAdmin (`http://localhost/phpmyadmin/`), crea una base de datos llamada `agenda_db` y ejecuta el script SQL para crear las tablas `usuarios` y `contactos`.
-4. Abre tu navegador y accede a la ruta: `http://localhost/agenda_web/`
+## 4. Instrucciones para instalar el proyecto localmente
+1. Abrir XAMPP y encender Apache y MySQL.
+2. Entrar a http://localhost/phpmyadmin, crear la base de datos agenda_db e importar agenda_db.sql.
+3. Copiar los archivos del proyecto dentro de la carpeta htdocs de XAMPP.
+4. Configurar conexion.php con localhost, agenda_db, usuario root y contraseña vacía.
+5. Abrir el proyecto desde el navegador en localhost.
+
+## 5. Detalle de las mejoras respecto a la versión anterior
+- Conexión a la base de datos configurada con PDO y manejo de errores.
+- Base de datos exportada e importada en el servidor remoto.
+- Aplicación subida y funcionando en el hosting público.
