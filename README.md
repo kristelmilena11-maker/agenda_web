@@ -4,7 +4,9 @@
 http://agenda-kristel.byethost3.com
 
 ## 2. Capturas de pantalla
-Pendiente agregar capturas de pantalla de la aplicación y el despliegue.
+![Agenda](capturas/Agenda.png)
+![Archivos en ByetHost](capturas/Archivos%20en%20ByetHost.png)
+![Funcionamiento](capturas/funcionamiento.png)
 
 ## 3. Tecnologías utilizadas
 - PHP (PDO)
