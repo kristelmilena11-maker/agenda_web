@@ -17,13 +17,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $telefono = trim($_POST['telefono']);
     $correo = trim($_POST['correo']);
     $ciudad = trim($_POST['ciudad']);
+    $favorito = isset($_POST['favorito']) ? 1 : 0;
 
     // Validación básica en servidor
     if (empty($nombre) || empty($telefono)) {
         $mensaje = "El nombre y el teléfono son obligatorios.";
     } else {
-        // Insertar el contacto vinculado al usuario actual
-        $sql = "INSERT INTO contactos (id_usuario, nombre, telefono, correo, ciudad) VALUES (:id_usuario, :nombre, :telefono, :correo, :ciudad)";
+        // Insertar el contacto vinculado al usuario actual incluyendo favorito
+        $sql = "INSERT INTO contactos (id_usuario, nombre, telefono, correo, ciudad, favorito) VALUES (:id_usuario, :nombre, :telefono, :correo, :ciudad, :favorito)";
         $stmt = $conexion->prepare($sql);
         
         if ($stmt->execute([
@@ -31,7 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'nombre' => $nombre,
             'telefono' => $telefono,
             'correo' => $correo,
-            'ciudad' => $ciudad
+            'ciudad' => $ciudad,
+            'favorito' => $favorito
         ])) {
             header("Location: dashboard.php");
             exit();
@@ -52,7 +54,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         h2 { text-align: center; color: #333; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; color: #666; }
-        input { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        input[type="text"], input[type="email"] { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        .checkbox-group { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; }
+        .checkbox-group input[type="checkbox"] { width: auto; margin: 0; cursor: pointer; }
+        .checkbox-group label { margin: 0; color: #333; cursor: pointer; }
         .btn { display: block; width: 100%; padding: 10px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
         .btn:hover { background-color: #218838; }
         .mensaje { text-align: center; margin-bottom: 15px; color: #d9534f; font-size: 14px; }
@@ -64,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="card">
         <h2>Nuevo Contacto</h2>
         <?php if (!empty($mensaje)): ?>
-            <div class="mensaje"><?php echo $mensaje; ?></div>
+            <div class="mensaje"><?php echo htmlspecialchars($mensaje); ?></div>
         <?php endif; ?>
         <form action="agregar.php" method="POST">
             <div class="form-group">
@@ -82,6 +87,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="form-group">
                 <label>Ciudad:</label>
                 <input type="text" name="ciudad">
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" name="favorito" id="favorito" value="1">
+                <label for="favorito">Marcar como contacto favorito</label>
             </div>
             <button type="submit" class="btn">Guardar Contacto</button>
         </form>

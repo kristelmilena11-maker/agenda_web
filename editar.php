@@ -14,7 +14,7 @@ $contacto = null;
 
 // Obtener el ID del contacto desde la URL
 if (isset($_GET['id'])) {
-    $contacto_id = $_GET['id'];
+    $contacto_id = (int) $_GET['id'];
 
     // Consultar el contacto asegurando que pertenezca al usuario actual (Seguridad estricta)
     $sql = "SELECT * FROM contactos WHERE id = :id AND id_usuario = :id_usuario";
@@ -30,16 +30,24 @@ if (isset($_GET['id'])) {
 
 // Procesar la actualización cuando se envía el formulario
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $contacto_id = $_POST['id'];
+    $contacto_id = (int) $_POST['id'];
     $nombre = trim($_POST['nombre']);
     $telefono = trim($_POST['telefono']);
     $correo = trim($_POST['correo']);
     $ciudad = trim($_POST['ciudad']);
+    $favorito = isset($_POST['favorito']) ? 1 : 0;
 
     if (empty($nombre) || empty($telefono)) {
         $mensaje = "El nombre y el teléfono son obligatorios.";
+        // Recuperar datos para no perder lo que el usuario estaba editando
+        $sql = "SELECT * FROM contactos WHERE id = :id AND id_usuario = :id_usuario";
+        $stmt = $conexion->prepare($sql);
+        $stmt->execute(['id' => $contacto_id, 'id_usuario' => $user_id]);
+        $contacto = $stmt->fetch(PDO::FETCH_ASSOC);
     } else {
-        $sql_update = "UPDATE contactos SET nombre = :nombre, telefono = :telefono, correo = :correo, ciudad = :ciudad WHERE id = :id AND id_usuario = :id_usuario";
+        $sql_update = "UPDATE contactos
+                       SET nombre = :nombre, telefono = :telefono, correo = :correo, ciudad = :ciudad, favorito = :favorito
+                       WHERE id = :id AND id_usuario = :id_usuario";
         $stmt_update = $conexion->prepare($sql_update);
         
         if ($stmt_update->execute([
@@ -47,6 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'telefono' => $telefono,
             'correo' => $correo,
             'ciudad' => $ciudad,
+            'favorito' => $favorito,
             'id' => $contacto_id,
             'id_usuario' => $user_id
         ])) {
@@ -69,7 +78,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         h2 { text-align: center; color: #333; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; color: #666; }
-        input { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        input[type="text"], input[type="email"] { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        .checkbox-group { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; }
+        .checkbox-group input[type="checkbox"] { width: auto; margin: 0; cursor: pointer; }
+        .checkbox-group label { margin: 0; color: #333; cursor: pointer; }
         .btn { display: block; width: 100%; padding: 10px; background-color: #ffc107; color: #333; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
         .btn:hover { background-color: #e0a800; }
         .mensaje { text-align: center; margin-bottom: 15px; color: #d9534f; font-size: 14px; }
@@ -81,11 +93,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="card">
         <h2>Editar Contacto</h2>
         <?php if (!empty($mensaje)): ?>
-            <div class="mensaje"><?php echo $mensaje; ?></div>
+            <div class="mensaje"><?php echo htmlspecialchars($mensaje); ?></div>
         <?php endif; ?>
         <?php if ($contacto): ?>
+            <?php $es_favorito = (int)($contacto['favorito'] ?? 0) === 1; ?>
             <form action="editar.php" method="POST">
-                <input type="hidden" name="id" value="<?php echo $contacto['id']; ?>">
+                <input type="hidden" name="id" value="<?php echo (int)$contacto['id']; ?>">
                 <div class="form-group">
                     <label>Nombre:</label>
                     <input type="text" name="nombre" value="<?php echo htmlspecialchars($contacto['nombre']); ?>" required>
@@ -101,6 +114,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <div class="form-group">
                     <label>Ciudad:</label>
                     <input type="text" name="ciudad" value="<?php echo htmlspecialchars($contacto['ciudad']); ?>">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" name="favorito" id="favorito" value="1" <?php echo $es_favorito ? 'checked' : ''; ?>>
+                    <label for="favorito">Marcar como contacto favorito</label>
                 </div>
                 <button type="submit" class="btn">Actualizar Contacto</button>
             </form>
